@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
-import { prisma } from "../utils/db.ts";
+import prisma from "../utils/db.ts";
 import { comparePassword, hashPassword, jwtGen } from "../utils/auth.ts";
 
 export const newUser = async (req: Request, res: Response) => {
 	try {
-		const { username, password } = req.body();
+		const { username, password } = req.body;
 		if (!username || !password) {
 			return res.status(400).json({ error: "Username & Password are required" });
 		}
@@ -18,6 +18,9 @@ export const newUser = async (req: Request, res: Response) => {
 		res.json({ token });
 	} catch (error: any) {
 		console.error("User creation error:", error);
+		if (error.code === "P2002") {
+			return res.status(409).json({ error: "Username already exists" });
+		}
 		return res.status(500).json({
 			error: "Failed to create user",
 		});
