@@ -12,14 +12,18 @@
 	"license": "ISC",
 	"type": "module",
 	"dependencies": {
+		"cors": "^2.8.5",
 		"dotenv": "^17.2.3",
 		"express": "^5.1.0",
-		"http-proxy-middleware": "^3.0.5"
+		"http-proxy-middleware": "^3.0.5",
+		"morgan": "^1.10.1"
 	},
 	"devDependencies": {
+		"@types/cors": "^2.8.19",
 		"@types/dotenv": "^6.1.1",
 		"@types/express": "^5.0.3",
 		"@types/http-proxy-middleware": "^0.19.3",
+		"@types/morgan": "^1.9.10",
 		"@types/node": "^24.8.1",
 		"nodemon": "^3.1.10",
 		"ts-node": "^10.9.2",
