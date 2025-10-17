@@ -1,0 +1,7 @@
+{
+	"exec": "npx ts-node --esm src/index.ts",
+	"env": {
+		"NODE_OPTIONS": "--loader ts-node/esm"
+	},
+	"ext": "ts,js,json"
+}
