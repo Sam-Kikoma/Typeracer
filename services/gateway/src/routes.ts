@@ -10,7 +10,7 @@ export const services = [
 		protected: false,
 	},
 	{
-		route: "/api/gameRoom",
+		route: "/api/gameroom",
 		target: "http://localhost:3002/api/game",
 		protected: true,
 	},
