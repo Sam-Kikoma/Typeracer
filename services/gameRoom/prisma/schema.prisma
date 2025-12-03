@@ -15,6 +15,7 @@ datasource db {
 
 model Room {
   id          Int         @id @default(autoincrement())
+  code        String      @unique @default(cuid())
   hostId      Int     
   status      RoomStatus  @default(WAITING)
   maxPlayers  Int         @default(5)
