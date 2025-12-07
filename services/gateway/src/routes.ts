@@ -9,9 +9,9 @@ export const services = [
 		target: "http://localhost:3001/api/auth/signup",
 		protected: false,
 	},
-	{
-		route: "/api/gameroom",
-		target: "http://localhost:3002/api/game",
-		protected: true,
-	},
+	// {
+	// 	route: "/api/gameroom",
+	// 	target: "http://localhost:3002/api/game",
+	// 	protected: true,
+	// },
 ];
