@@ -8,11 +8,22 @@ import type { DecodedToken, SocketUser } from "./types/types.ts";
 import * as RoomStore from "../src/store/room.ts";
 
 const app = express();
-app.use(cors());
+app.use(
+	cors({
+		origin: "http://localhost:5173",
+		credentials: true,
+	})
+);
 app.use(express.json());
 
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+	cors: {
+		origin: "http://localhost:5173",
+		methods: ["GET", "POST"],
+		credentials: true,
+	},
+});
 
 io.use((socket, next) => {
 	try {
@@ -53,9 +64,9 @@ const broadcastRoomState = (roomId: string) => {
 };
 
 //Call gameEngine
-function notifyGameEngineStart(roomId: string, players: Array<{ userId: number; username: string }>) {
+const notifyGameEngineStart = (roomId: string, players: Array<{ userId: number; username: string }>) => {
 	console.log("NOTIFY GAME ENGINE START", roomId, players);
-}
+};
 
 io.on("connection", (socket: Socket) => {
 	const user = socket.data.user as SocketUser;
@@ -63,7 +74,7 @@ io.on("connection", (socket: Socket) => {
 
 	socket.on("create_room", (opts: { maxPlayers?: number } = {}, cb?: (err: string | null, room?: any) => void) => {
 		try {
-			const maxPlayers = opts.maxPlayers ?? 8;
+			const maxPlayers = opts.maxPlayers ?? 2;
 			const room = RoomStore.createRoom(socket.id, user.id, user.username, maxPlayers);
 			socket.join(room.id);
 			broadcastRoomState(room.id);
@@ -156,6 +167,16 @@ io.on("connection", (socket: Socket) => {
 		}
 	});
 
+	socket.on("get_rooms", (cb?: (err: string | null, rooms?: any) => void) => {
+		try {
+			const rooms = RoomStore.listRooms();
+			cb && cb(null, rooms);
+		} catch (err) {
+			console.error(err);
+			cb && cb("failed");
+		}
+	});
+
 	socket.on("get_room_state", (data: { roomId: string }, cb?: (err: string | null, state?: any) => void) => {
 		const room = RoomStore.getRoom(data.roomId);
 		if (!room) return cb && cb("room_not_found");
@@ -169,8 +190,6 @@ io.on("connection", (socket: Socket) => {
 	});
 });
 
-app.get("/rooms", (req, res) => {
-	res.json(RoomStore.listRooms());
+server.listen(PORT, () => {
+	console.log(`Room service listening on port ${PORT}`);
 });
-
-server.listen(PORT);

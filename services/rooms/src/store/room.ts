@@ -71,7 +71,7 @@ export const setRoomStatus = (roomId: string, status: Room["status"]): Room | un
 export const listRooms = () => {
 	return Array.from(rooms.values()).map((r) => ({
 		id: r.id,
-		players: r.players.size,
+		playerCount: r.players.size,
 		maxPlayers: r.maxPlayers,
 		status: r.status,
 	}));
