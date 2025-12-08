@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { PORT } from "./utils/config.ts";
+import { io as ioClient } from "socket.io-client";
+import { PORT, ENGINE_URL } from "./utils/config.ts";
 import { decodeToken } from "./utils/decoder.ts";
 import type { DecodedToken, SocketUser } from "./types/types.ts";
 import * as RoomStore from "../src/store/room.ts";
@@ -23,6 +24,25 @@ const io = new Server(server, {
 		methods: ["GET", "POST"],
 		credentials: true,
 	},
+});
+
+// Connect to Game Engine
+const engineSocket = ioClient(ENGINE_URL, {
+	reconnection: true,
+	reconnectionDelay: 1000,
+	reconnectionAttempts: 5,
+});
+
+engineSocket.on("connect", () => {
+	console.log(`Connected to Game Engine at ${ENGINE_URL}`);
+});
+
+engineSocket.on("connect_error", (err) => {
+	console.error(`Game Engine connection error: ${err.message}`);
+});
+
+engineSocket.on("disconnect", (reason) => {
+	console.log(`Disconnected from Game Engine: ${reason}`);
 });
 
 io.use((socket, next) => {
@@ -63,9 +83,19 @@ const broadcastRoomState = (roomId: string) => {
 	io.to(roomId).emit("room_state", payload);
 };
 
-//Call gameEngine
+// Call game engine to start race
 const notifyGameEngineStart = (roomId: string, players: Array<{ userId: number; username: string }>) => {
 	console.log("NOTIFY GAME ENGINE START", roomId, players);
+
+	engineSocket.emit("start_race", { roomId, players }, (err: string | null, session?: any) => {
+		if (err) {
+			console.error("Failed to start race in engine:", err);
+			io.to(roomId).emit("race_error", { message: "Failed to start race" });
+		} else {
+			console.log("Race started in engine:", session);
+			io.to(roomId).emit("race_text", { text: session.text });
+		}
+	});
 };
 
 io.on("connection", (socket: Socket) => {
