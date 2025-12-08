@@ -17,6 +17,7 @@ const TypingRace = () => {
 			setStartTime(Date.now());
 			setUserInput("");
 			setErrors(0);
+			setHasFinished(false);
 		}
 	}, [gameContext?.raceText]);
 
@@ -57,22 +58,15 @@ const TypingRace = () => {
 		// Calculate stats
 		const wpm = calculateWPM();
 		const accuracy = calculateAccuracy();
-		const progress = Math.min(Math.round((input.length / gameContext.raceText!.length) * 100), 99);
+		const progress = Math.min(Math.round((input.length / gameContext.raceText!.length) * 100), 100);
 
 		if (gameContext?.currentRoom && authContext?.auth.user) {
 			gameContext.updateProgress(gameContext.currentRoom.id, authContext.auth.user.id, progress, wpm, accuracy);
 		}
-	};
 
-	const handleFinishRace = () => {
-		if (hasFinished) return;
-		setHasFinished(true);
-
-		const wpm = calculateWPM();
-		const accuracy = calculateAccuracy();
-
-		if (gameContext?.currentRoom && authContext?.auth.user) {
-			gameContext.updateProgress(gameContext.currentRoom.id, authContext.auth.user.id, 100, wpm, accuracy);
+		// Automatically finish race when user types the complete text correctly
+		if (input === gameContext?.raceText) {
+			setHasFinished(true);
 		}
 	};
 
@@ -111,45 +105,49 @@ const TypingRace = () => {
 				))}
 			</div>
 
-			<div className="flex gap-2">
-				<input
-					ref={inputRef}
-					type="text"
-					value={userInput}
-					onChange={handleInputChange}
-					disabled={hasFinished}
-					className="flex-1 p-3 border-2 border-gray-300 rounded text-lg font-mono focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
-					placeholder="Start typing..."
-				/>
-				<button
-					onClick={handleFinishRace}
-					disabled={hasFinished || !userInput}
-					className="px-6 py-3 bg-blue-500 text-white rounded font-bold hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-				>
-					{hasFinished ? "Finished!" : "Finish Race"}
-				</button>
-			</div>
+			<input
+				ref={inputRef}
+				type="text"
+				value={userInput}
+				onChange={handleInputChange}
+				disabled={hasFinished}
+				className="w-full p-3 border-2 border-gray-300 rounded text-lg font-mono focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
+				placeholder="Start typing..."
+			/>
 
 			<div className="mt-4">
-				<h3 className="text-sm font-bold mb-2">Players:</h3>
-				{gameContext.racePlayers.map((player) => (
-					<div key={player.userId} className="mb-2">
-						<div className="flex justify-between text-sm mb-1">
-							<span className={player.userId === authContext?.auth.user?.id ? "font-bold" : ""}>
-								{player.username} {player.finished && "🏁"}
-							</span>
-							<span>
-								{player.wpm} WPM | {player.accuracy}%
-							</span>
-						</div>
-						<div className="w-full bg-gray-200 rounded-full h-2">
+				<h3 className="text-lg font-bold mb-3">Live Leaderboard 🏆</h3>
+				<div className="space-y-2">
+					{gameContext.racePlayers
+						.sort((a, b) => b.progress - a.progress)
+						.map((player, index) => (
 							<div
-								className={`h-2 rounded-full transition-all ${player.finished ? "bg-green-500" : "bg-blue-500"}`}
-								style={{ width: `${player.progress}%` }}
-							/>
-						</div>
-					</div>
-				))}
+								key={player.userId}
+								className={`p-3 rounded ${
+									player.userId === authContext?.auth.user?.id
+										? "bg-green-100 border-2 border-green-500"
+										: "bg-gray-50 border border-gray-200"
+								}`}
+							>
+								<div className="flex justify-between items-center mb-1">
+									<span className="font-bold">
+										{index + 1}. {player.username}
+										{player.userId === authContext?.auth.user?.id && " (You)"}
+										{player.finished && " 🏁"}
+									</span>
+									<span className="text-sm">
+										{player.wpm} WPM | {player.accuracy}%
+									</span>
+								</div>
+								<div className="w-full bg-gray-200 rounded-full h-2">
+									<div
+										className={`h-2 rounded-full transition-all ${player.finished ? "bg-green-500" : "bg-blue-500"}`}
+										style={{ width: `${player.progress}%` }}
+									/>
+								</div>
+							</div>
+						))}
+				</div>
 			</div>
 
 			{hasFinished && (!gameContext.raceResults || gameContext.raceResults.length === 0) && (
@@ -169,7 +167,7 @@ const TypingRace = () => {
 				</div>
 			)}
 
-			{gameContext.raceResults && gameContext.raceResults.length > 0 ? (
+			{gameContext.raceResults && gameContext.raceResults.length > 0 && (
 				<div className="mt-4 p-4 bg-green-50 rounded border-2 border-green-500">
 					<h3 className="text-xl font-bold mb-2">Race Results 🏆</h3>
 					{gameContext.raceResults.map((result) => (
@@ -183,21 +181,7 @@ const TypingRace = () => {
 						</div>
 					))}
 				</div>
-			) : userInput === gameContext.raceText ? (
-				<div className="mt-4 p-4 bg-blue-50 rounded border-2 border-blue-500">
-					<h3 className="text-xl font-bold mb-2">You Finished! 🎉</h3>
-					<p className="text-lg">Waiting for other players to finish...</p>
-					<div className="mt-2">
-						<p>Your Stats:</p>
-						<p>
-							WPM: <strong>{calculateWPM()}</strong>
-						</p>
-						<p>
-							Accuracy: <strong>{calculateAccuracy()}%</strong>
-						</p>
-					</div>
-				</div>
-			) : null}
+			)}
 		</div>
 	);
 };

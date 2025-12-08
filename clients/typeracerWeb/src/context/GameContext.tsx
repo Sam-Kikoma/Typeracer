@@ -152,7 +152,6 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 		newSocket.on("race_text", (data: { text: string }) => {
 			console.log("Received race text:", data.text);
 			setRaceText(data.text);
-			setRacePlayers([]);
 			setRaceResults(null);
 		});
 
@@ -174,7 +173,6 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 		newEngineSocket.on("race_started", (data: { roomId: string; text: string; startedAt: number }) => {
 			console.log("Race started with text:", data.text);
 			setRaceText(data.text);
-			setRacePlayers([]);
 			setRaceResults(null);
 
 			newEngineSocket.emit("join_race", { roomId: data.roomId }, (err: string | null) => {
@@ -184,7 +182,9 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
 		newEngineSocket.on("race_state", (data: { roomId: string; status: string; players: RacePlayer[] }) => {
 			console.log("Race state updated:", data);
-			setRacePlayers(data.players);
+			if (data.players && Array.isArray(data.players)) {
+				setRacePlayers(data.players);
+			}
 		});
 
 		newEngineSocket.on(
