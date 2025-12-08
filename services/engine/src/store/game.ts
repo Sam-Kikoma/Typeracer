@@ -21,11 +21,16 @@ const raceSessions = new Map<string, RaceSession>();
 
 // Sample texts for typing
 const sampleTexts = [
-	"The truth is: I’m not a superhero—I'm just a man who built a suit and took responsibility for what it created.",
-	"Hope is the key. It’s stronger than fear, and once it spreads, nothing can stop it.",
-	"Life moves fast. If you don’t pause to appreciate the small moments, you could miss them entirely.",
-	"Our choices define us far more than our abilities ever will.",
-	"Sometimes the ones we love drive us to madness, but we endure because love is worth it.",
+	"Courage grows when we take one small step beyond our comfort each day.",
+	"Light appears even in the darkest hour when we choose to keep moving forward.",
+	"Strength is found not in perfection but in steady effort through every storm.",
+	"Every new path begins with a single brave decision.",
+	"Peace comes when we release fear and trust the journey ahead.",
+	"Hope becomes powerful when we share it with another soul.",
+	"True wisdom lives in quiet moments where the heart listens before it speaks.",
+	"Kindness can change a life long before we notice its impact.",
+	"Greatness begins in ordinary choices made with purpose.",
+	"Joy grows when gratitude guides the way.",
 ];
 
 export const createRaceSession = (roomId: string, players: Array<{ userId: number; username: string }>) => {
