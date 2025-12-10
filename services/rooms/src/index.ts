@@ -11,7 +11,7 @@ import * as RoomStore from "../src/store/room.ts";
 const app = express();
 app.use(
 	cors({
-		origin: "*",
+		origin: true,
 		credentials: true,
 	})
 );
@@ -20,7 +20,7 @@ app.use(express.json());
 const server = createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: "*",
+		origin: true,
 		methods: ["GET", "POST"],
 		credentials: true,
 	},
