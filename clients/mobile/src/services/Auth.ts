@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/auth";
+import { API_CONFIG } from "../config/api";
 
 interface AuthCredentials {
 	username: string;
@@ -36,7 +35,7 @@ const decodeToken = (token: string): DecodedToken | null => {
 export const loginReq = async (
 	credentials: AuthCredentials
 ): Promise<{ token: string; user: { id: number; username: string } }> => {
-	const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials);
+	const response = await axios.post<AuthResponse>(`${API_CONFIG.AUTH_API}/login`, credentials);
 	const decoded = decodeToken(response.data.token);
 
 	if (!decoded) {
@@ -52,7 +51,7 @@ export const loginReq = async (
 export const signupReq = async (
 	credentials: AuthCredentials
 ): Promise<{ token: string; user: { id: number; username: string } }> => {
-	const response = await axios.post<AuthResponse>(`${API_URL}/signup`, credentials);
+	const response = await axios.post<AuthResponse>(`${API_CONFIG.AUTH_API}/signup`, credentials);
 	const decoded = decodeToken(response.data.token);
 
 	if (!decoded) {

@@ -1,15 +1,15 @@
 {
-  "name": "typeracer-services",
-  "version": "1.0.0",
-  "description": "Typeracer microservices orchestrator",
-  "scripts": {
-    "dev": "concurrently -n \"auth,rooms,engine,gateway\" -c \"blue,green,yellow,magenta\" \"npm --prefix auth run dev\" \"npm --prefix rooms run dev\" \"npm --prefix engine run dev\" \"npm --prefix gateway run dev\"",
-    "dev:auth": "npm --prefix auth run dev",
-    "dev:rooms": "npm --prefix rooms run dev",
-    "dev:engine": "npm --prefix engine run dev",
-    "dev:gateway": "npm --prefix gateway run dev"
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.0"
-  }
+	"name": "typeracer-services",
+	"version": "1.0.0",
+	"description": "Typeracer microservices orchestrator",
+	"scripts": {
+		"dev": "concurrently -n \"auth,rooms,engine,gateway\" -c \"blue,green,yellow,magenta\" \"npm --prefix auth run dev\" \"npm --prefix rooms run dev\" \"npm --prefix engine run dev\" \"npm --prefix gateway run dev\"",
+		"dev:auth": "npm --prefix auth run dev",
+		"dev:rooms": "npm --prefix rooms run dev",
+		"dev:engine": "npm --prefix engine run dev",
+		"dev:gateway": "npm --prefix gateway run dev"
+	},
+	"devDependencies": {
+		"concurrently": "^9.1.0"
+	}
 }
