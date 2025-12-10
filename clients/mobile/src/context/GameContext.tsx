@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import AuthContext from "./AuthContext";
+import { API_CONFIG } from "../config/api";
 
 interface Player {
 	userId: number;
@@ -81,11 +82,11 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 			return;
 		}
 
-		const newSocket = io("http://localhost:3002", {
-			withCredentials: true,
+		const newSocket = io(API_CONFIG.GAME_SERVER, {
 			auth: {
 				token: authContext.auth.token,
 			},
+			transports: ["websocket", "polling"],
 		});
 
 		newSocket.on("connect", () => {
@@ -157,8 +158,8 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
 		setSocket(newSocket);
 
-		const newEngineSocket = io("http://localhost:3003", {
-			withCredentials: true,
+		const newEngineSocket = io(API_CONFIG.ENGINE_SERVER, {
+			transports: ["websocket", "polling"],
 		});
 
 		newEngineSocket.on("connect", () => {
